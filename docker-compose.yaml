@@ -1,0 +1,104 @@
+version: "3.3"
+services:
+    mongouser:
+      image: mongo:latest
+      ports:
+      - target: 27017
+        published: 27018
+        protocol: tcp
+      volumes:
+      - ./data:/data
+
+    mongoaudit:
+      image: mongo:latest
+      ports:
+      - target: 27017
+        published: 27017
+        protocol: tcp
+      volumes:
+      - ./data:/data
+
+    activemq:
+      image: localhost:5000/activemq
+      ports:
+      - target: 61616
+        published: 61616
+        protocol: tcp
+
+    search:
+      image: localhost:5000/search
+      ports:
+      - target: 8082
+        published: 8082
+        protocol: tcp
+      depends_on:
+      - activemq
+
+    user:
+      image: localhost:5000/user
+      ports:
+      - target: 5001
+        published: 5001
+        protocol: tcp
+      depends_on:
+      - mongouser
+      - activemq
+      - search
+
+    core:
+      image: localhost:5000/core
+      ports:
+      - target: 8083
+        published: 8083
+        protocol: tcp
+      depends_on:
+      - mongoaudit
+      - activemq
+      - search
+      - user
+
+    audit:
+      build: Beholder-Audit
+      image: localhost:5000/audit
+      ports:
+      - target: 8081
+        published: 8081
+        protocol: tcp
+      depends_on:
+        - mongoaudit
+        - activemq
+        - search
+        - user
+        - core
+
+    react:
+      image: localhost:5000/react
+      ports:
+      - target: 3000
+        published: 3000
+        protocol: tcp
+      depends_on:
+      - activemq
+      - search
+      - user
+      - core
+      - audit
+
+    nginx:
+      image: localhost:5000/nginx
+      volumes:
+      - type: bind
+        source: ./nginx/nginx.conf
+        target: /etc/nginx/nginx.conf
+      ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+      depends_on:
+        - activemq
+        - search
+        - user
+        - core
+        - audit
+        - react
+ 
