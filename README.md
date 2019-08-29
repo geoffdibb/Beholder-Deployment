@@ -16,7 +16,7 @@ This application allows you to search a database for potential information on a 
 Our project uses a mixture of different softwares to create a working application. We have several springboot API’s that handle the Audit and Search functionality. We also make use of a react frontend and a node backend to cope with a secure login making use of Bcrypt and Passport. This is then linked with nginx to allow the various services to communicate with each other. Additionally, this links to several databases. The main mongo one being kept separate to preserve the integrity of the data and add an extra level of security.
 One final component worth mentioning is the Queue which handles the requests from the Core API to the Audit API. This was created as ActiveMQ and serves as a handler to the audit api preventing simultaneous requests from slowing the application down.
 
-![project architecture](https://raw.githubusercontent.com/geoffdibb/Beholder-Deployment/master/Documentation/architecture.png
+![project architecture](https://raw.githubusercontent.com/geoffdibb/Beholder-Deployment/master/Documents/architecture.png
 
 # Deployment
 
