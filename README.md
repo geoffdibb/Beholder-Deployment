@@ -13,8 +13,8 @@
 This application allows you to search a database for potential information on a number of factors with multiple search categories. It is also secured with Passport and Bcrypted behind a login wall.
 
 # Project Architecture
-Our project uses a mixture of different softwares to create a working application. We have several springboot API’s that handle the Audit and Search functionality. We also make use of a react frontend and a node backend to cope with a secure login making use of Bcrypt and Passport. This is then linked with nginx to allow the various services to communicate with each other. Additionally, this links to several databases. The main mongo one being kept separate to preserve the integrity of the data and add an extra level of security.
-One final component worth mentioning is the Queue which handles the requests from the Core API to the Audit API. This was created as ActiveMQ and serves as a handler to the audit api preventing simultaneous requests from slowing the application down.
+Our project uses a mixture of different softwares to create a working application. We have several springboot API’s that handle the Audit and Search functionality. We also make use of a react frontend and a node backend to cope with a secure login making use of Bcrypt and Passport. This is then linked with nginx to allow the various services to communicate with each other. Additionally, this links to several databases. The main database is kept separate to preserve the integrity of the data and add an extra level of security.
+One final component worth mentioning is the Queue which handles the requests from the Core API to the Audit API. This is implemented using ActiveMQ and serves as a handler to the audit api preventing simultaneous requests from slowing down the application.
 
 ![project architecture](https://raw.githubusercontent.com/geoffdibb/Beholder-Deployment/master/Documents/architecture.png)
 
@@ -39,9 +39,9 @@ Beholder-Audit will need an application.properties file in src/main/resources
 ```
 server.port=8081
 spring.activemq.broker-url=tcp://localhost:61616?jms.redeliveryPolicy.maximumRedeliveries=1
-spring.activemq.user=admin
-spring.activemq.password=admin
-spring.data.mongodb.uri=mongodb://*username*:*password*@mongoaudit:27018/userLogs
+spring.activemq.user=[USERNAME]
+spring.activemq.password=[PASSWORD]
+spring.data.mongodb.uri=mongodb://[USERNAME]:[PASSWORD]@mongoaudit:27018/userLogs
 
 path.getSearchLogs=/getSearchLogs
 path.getAuditRequestLogs=/getAuditRequestLogs
@@ -56,7 +56,7 @@ Beholder-Search will need an application.properties file in src/main/resources
 ```
 server.port=8082
 
-spring.data.mongodb.uri=mongodb://*username*:*password*@*mongodbip*:27017/beholder
+spring.data.mongodb.uri=mongodb://[USERNAME]:[PASSWORD]@[MONGODB_IP]:27017/beholder
 
 spring.main.allow-bean-definition-overriding=true
 
@@ -65,8 +65,24 @@ path.searchCategory=/{category}/{searchTerm}
 ```
 
 Beholder-user will need a config folder with 3 files: keys.js, jwtConfig.js & passport.js.
+**keys.js**
 
-Run the docker compose.yaml file
+```
+module.exports = { mongoURI: "mongodb://[USERNAME]:[PASSWORD]@mongoUser/UserDatabase"}
+```
+
+**jwtConfig.js**
+
+```
+module.exports = {
+    secret: "[SECRET]",
+};
+```
+**passport.js**
+
+*Passport implements a local strategy for login and api requests use a jwt strategy. It also implements bcyrpt for password storage*
+
+**Run the docker compose.yaml file**
 
 ```
 docker-compose up
